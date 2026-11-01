@@ -1,156 +1,214 @@
+*/* ==========================================================================
+   Reset & base
+   ========================================================================== */
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  outline: 0;
-  transition: all 0.5s ease;
 }
 
 body {
+  min-height: 100vh;
   font-family: sans-serif;
-}
-
-a {
-  text-decoration: none;
-  color: #ffff;
-}
-
-body {
   background-image: linear-gradient(
     to bottom right,
-    rgba(79, 51, 176, 1),
-    rgba(210, 53, 165)
+    rgb(79, 51, 176),
+    rgb(210, 53, 165)
   );
 }
 
 .container {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
   display: grid;
   place-items: center;
 }
 
+/* Visible keyboard focus (the old reset removed it completely) */
+button:focus-visible,
+.theme-toggler:focus-visible {
+  outline: 3px solid #7c5cff;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Theme colors (change colors here, nowhere else)
+   ========================================================================== */
+
+/* Light theme (default) */
+.calculator {
+  --calc-bg: #ffffff;
+  --display-text: #0a1e23;
+  --clear-bg: #c3eaff;
+  --clear-text: #fc4552;
+  --number-bg: #c3eaff;
+  --number-text: #000000;
+  --operator-bg: #ffd0f3;
+  --operator-text: #f967f3;
+  --equal-bg: #adf9e7;
+  --equal-text: #000000;
+}
+
+/* Dark theme */
+.calculator.dark {
+  --calc-bg: #071115;
+  --display-text: #f8fafd;
+  --clear-bg: #1b2f38;
+  --clear-text: #f8fafb;
+  --number-bg: #102129;
+  --number-text: #f8fafb;
+  --operator-bg: #3b1e36;
+  --operator-text: #f967f3;
+  --equal-bg: #223323;
+  --equal-text: #ffffff;
+}
+
+/* ==========================================================================
+   Calculator body
+   ========================================================================== */
 .calculator {
   position: relative;
-  height: auto;
-  width: auto;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 30px #000;
+  background-color: var(--calc-bg);
+  transition: background-color 0.5s ease;
 }
 
+/* ==========================================================================
+   Theme toggler
+   ========================================================================== */
 .theme-toggler {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: #333;
   color: #fff;
   cursor: pointer;
-  z-index: 1;
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
 
+/* "active" = dark theme is on */
 .theme-toggler.active {
+  background-color: #fff;
   color: #333;
 }
 
-.theme-toggler.active::before {
-  background-color: #fff;
+/* Icon: moon in light theme, sun in dark theme */
+.toggler-icon {
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1;
 }
 
-.theme-toggler::before {
-  content: "";
-  height: 30px;
-  width: 30px;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background-color: #333;
-  z-index: -1;
+.toggler-icon::before {
+  content: "\263E"; /* moon */
 }
 
+.theme-toggler.active .toggler-icon::before {
+  content: "\2600"; /* sun */
+}
+
+/* ==========================================================================
+   Display
+   ========================================================================== */
 #display {
-  margin: 0 10px;
   height: 150px;
-  width: auto;
   max-width: 270px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  margin: 0 10px 20px;
+  display: grid;
+  align-content: end; /* keeps text at the bottom */
+  text-align: right;
+  white-space: nowrap;
   font-size: 30px;
-  margin-bottom: 20px;
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  color: var(--display-text);
+  transition: color 0.5s ease;
 }
 
 #display::-webkit-scrollbar {
-  display: block;
   height: 3px;
 }
 
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
 button {
   height: 60px;
   width: 60px;
+  margin: 5px;
   border: 0;
   border-radius: 30px;
-  margin: 5px;
   font-size: 20px;
   cursor: pointer;
-  transition: all 200ms ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
 
 button:hover {
   transform: scale(1.1);
 }
 
-button#equal {
+button:active {
+  transform: scale(0.95);
+}
+
+.btn-number {
+  background-color: var(--number-bg);
+  color: var(--number-text);
+}
+
+.btn-operator {
+  background-color: var(--operator-bg);
+  color: var(--operator-text);
+}
+
+.btn-equal {
   height: 80px;
+  background-color: var(--equal-bg);
+  color: var(--equal-text);
 }
 
-/* light theme */
-
-.calculator {
-  background-color: #fff;
+/* "C" also has the btn-operator class, so this must come after it */
+#clear {
+  background-color: var(--clear-bg);
+  color: var(--clear-text);
 }
 
-.calculator #display {
-  color: #0a1e23;
-}
+/* ==========================================================================
+   Small screens (keep this block LAST)
+   ========================================================================== */
+@media (max-width: 400px) {
+  .calculator {
+    padding: 15px;
+  }
 
-.calculator button#clear {
-  background-color: #c3eaff;
-  color: #fc4552;
-}
+  #display {
+    max-width: 220px;
+    font-size: 26px;
+  }
 
-.calculator button.btn-number {
-  background-color: #c3eaff;
-  color: #000;
-}
+  button {
+    height: 52px;
+    width: 52px;
+    margin: 4px;
+    border-radius: 26px;
+    font-size: 18px;
+  }
 
-.calculator button.btn-operator {
-  background-color: #ffd0f3;
-  color: #f967f3;
-}
-
-.calculator button.btn-equal {
-  background-color: #adf9e7;
-  color: #000;
-}
-
-/* dark theme */
-
-.calculator.dark {
-  background-color: #071115;
-}
-
-.calculator.dark #display {
-  color: #f8fafd;
-}
-
-.calculator.dark button#clear {
-  background-color: #1b2f38;
-  color: #f8fafb;
-}
-
-.calculator.dark button.btn.equal {
-  background-color: #223323;
-  color: #fff;
+  .btn-equal {
+    height: 70px;
+  }
 }
